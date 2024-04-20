@@ -1,4 +1,4 @@
 .idea*
-static*
-node_modules*
-app/web/client/static
+/app/.idea*
+/app/web/client/static*
+/app/web/client/node_modules*
