@@ -1,2 +1,4 @@
-*.idea
+.idea*
+static*
+node_modules*
 app/web/client/static
