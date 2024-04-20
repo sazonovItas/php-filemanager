@@ -5,6 +5,12 @@ namespace app\domain\service;
 use app\domain\entity\User;
 use app\domain\repo\TokenRepository;
 use app\domain\repo\UserRepository;
+use app\exceptions\InternalErrorException;
+use app\exceptions\TokenInvalidException;
+use app\exceptions\TokenNotFoundException;
+use app\exceptions\UserAlreadyExistsException;
+use app\exceptions\UserNotFoundException;
+use app\exceptions\UserPasswordDoesNotMatchException;
 use Exception;
 
 class UserService
@@ -12,13 +18,13 @@ class UserService
     public static function signup(string $login, string $password): User {
         $candidate = UserRepository::getUserByLogin($login);
         if ($candidate) {
-            throw new Exception("User with this login already exists");
+            throw new UserAlreadyExistsException("User with this login already exists");
         }
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         $user = UserRepository::createUser(new User(0, $login, $hashedPassword));
         if (!$user) {
-            throw new Exception("Couldn't create user");
+            throw new InternalErrorException("Couldn't create user");
         }
 
         return $user;
@@ -27,11 +33,11 @@ class UserService
     public static function signin(string $login, string $password, bool $genRefresh): array {
         $candidate = UserRepository::getUserByLogin($login);
         if (!$candidate) {
-            throw new Exception("User with this login does not exist");
+            throw new UserNotFoundException("User with this login does not exist");
         }
 
         if (password_verify($password, $candidate->getPassword())) {
-            throw new Exception("Password does not match");
+            throw new UserPasswordDoesNotMatchException("Password does not match");
         };
 
         $refreshToken = null;
@@ -51,11 +57,11 @@ class UserService
     public static function refresh(int $userId): string {
         $refreshToken = TokenRepository::getById($userId);
         if (!$refreshToken) {
-            throw new Exception("Couldn't find refresh token");
+            throw new TokenNotFoundException("Couldn't find refresh token");
         }
 
         if (!TokenService::validateToken($refreshToken, getenv("JWT_REFRESH_SECRET_KEY"))) {
-            throw new Exception("Refresh token is invalid");
+            throw new TokenInvalidException("Refresh token is invalid");
         }
 
         return TokenService::generateAccessToken(['userId' => $userId]);
@@ -64,11 +70,11 @@ class UserService
     public static function logout(int $userId): void {
         $refreshToken = TokenRepository::getByUserId($userId);
         if (!$refreshToken) {
-            throw new Exception("Couldn't find refresh token");
+            throw new TokenNotFoundException("Couldn't find refresh token");
         }
 
         if (TokenRepository::deleteToken($refreshToken->getId())) {
-            throw new Exception("Couldn't delete refresh token");
+            throw new InternalErrorException("Couldn't delete refresh token");
         }
     }
 }

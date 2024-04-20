@@ -2,7 +2,9 @@
 
 namespace app\domain\entity;
 
-class Token implements \JsonSerializable
+use JsonSerializable;
+
+class Token implements JsonSerializable
 {
     public function __construct(
         private int $id,

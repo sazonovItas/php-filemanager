@@ -2,7 +2,9 @@
 
 namespace app\domain\entity;
 
-class User implements \JsonSerializable
+use JsonSerializable;
+
+class User implements JsonSerializable
 {
     public function __construct(
         private int $id,

@@ -29,7 +29,7 @@ class TokenService
         $key = getenv('JWT_REFRESH_SECRET_KEY');
 
         $issuedAt = time();
-        $expireAt = $issuedAt + 60 * 60;
+        $expireAt = $issuedAt + 60 * 60 * 24;
         $payload = [
             'iat' => $issuedAt,
             'nbf' => $issuedAt,

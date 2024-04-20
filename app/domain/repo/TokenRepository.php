@@ -10,7 +10,7 @@ class TokenRepository
     public static PDO $db;
 
     public static function createToken(Token $token): Token|false {
-        $statement = self::$db->prepare("INSERT INTO token (user_id, token) VALUES (:id, :token) RETURNING *");
+        $statement = self::$db->prepare("INSERT INTO tokens (user_id, token) VALUES (:id, :token) RETURNING *");
         $statement->bindValue(':id', $token->getId());
         $statement->bindValue(':token', $token->getToken());
         $statement->execute();
@@ -20,7 +20,7 @@ class TokenRepository
     }
 
     public static function getById(int $id): Token|false {
-        $statement = self::$db->prepare("SELECT * FROM token WHERE id = :id");
+        $statement = self::$db->prepare("SELECT * FROM tokens WHERE id = :id");
         $statement->bindValue('id', $id);
         $statement->execute();
 
@@ -29,7 +29,7 @@ class TokenRepository
     }
 
     public static function getByUserId(int $userId): Token|false {
-        $statement = self::$db->prepare("SELECT * FROM token WHERE user_id = :id");
+        $statement = self::$db->prepare("SELECT * FROM tokens WHERE user_id = :id");
         $statement->bindValue('id', $userId);
         $statement->execute();
 
@@ -38,7 +38,7 @@ class TokenRepository
     }
 
     public static function updateToken(Token $token): Token|false {
-        $statement = self::$db->prepare("UPDATE token SET token = :token WHERE id = :id RETURNING *");
+        $statement = self::$db->prepare("UPDATE tokens SET token = :token WHERE id = :id RETURNING *");
         $statement->bindValue(':token', $token->getToken());
         $statement->bindValue(':id', $token->getId());
         $statement->execute();
@@ -48,7 +48,7 @@ class TokenRepository
     }
 
     public static function deleteToken($id): bool {
-        $statement = self::$db->prepare("DELETE FROM token WHERE id = :id");
+        $statement = self::$db->prepare("DELETE FROM tokens WHERE id = :id");
         $statement->bindValue(':id', $id);
 
         return $statement->execute();
