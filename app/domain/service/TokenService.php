@@ -40,10 +40,17 @@ class TokenService
         return JWT::encode($payload, $key, "HS512");
     }
 
+    // TODO: does not throw exception from cannot save refresh token
     public static function saveToken(int $userId, string $refreshToken): Token|false {
         $tokenData = TokenRepository::getByUserId($userId);
         if ($tokenData) {
-            return TokenRepository::updateToken(new Token($tokenData->getId(), $tokenData->getUserId(), $refreshToken));
+            $token = new Token($tokenData->getId(), $tokenData->getUserId(), $refreshToken);
+
+            if (TokenRepository::updateToken($token)) {
+                return $token;
+            } else {
+                throw new \Exception("Couldn't save token");
+            }
         }
 
         return TokenRepository::createToken(new Token(0, $userId, $refreshToken));

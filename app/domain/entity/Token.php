@@ -8,7 +8,7 @@ class Token implements JsonSerializable
 {
     public function __construct(
         private int $id,
-        private int $userId,
+        private int $user_id,
         private string $token,
     )
     {
@@ -25,7 +25,7 @@ class Token implements JsonSerializable
      * @return int user id
      */
     public function getUserId(): int {
-        return $this->userId;
+        return $this->user_id;
     }
 
     /**

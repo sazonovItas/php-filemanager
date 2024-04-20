@@ -1,18 +1,12 @@
-CREATE SCHEMA IF NOT EXISTS file_manager;
-
-SET SEARCH_PATH TO file_manager, public;
-
 CREATE TABLE IF NOT EXISTS users (
-  id                serial     NOT NULL,
+  id                INT           AUTO_INCREMENT PRIMARY KEY,
   login             VARCHAR(20)   NOT NULL,
-  password_hash     VARCHAR(60)   NOT NULL, 
-  PRIMARY KEY (id)
+  password          VARCHAR(60)   NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS tokens (
-  id                serial          NOT NULL,
-  user_id           serial          NOT NULL,
+  id                INT             AUTO_INCREMENT PRIMARY KEY,
+  user_id           INT             NOT NULL,
   token             VARCHAR(1024)   NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (user_id) REFERENCES users (id)
+  FOREIGN KEY (user_id) REFERENCES users(id)
 );

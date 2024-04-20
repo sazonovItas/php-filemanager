@@ -2,6 +2,7 @@
 
 namespace app\middlewares;
 
+use app\exceptions\BadRequestHttpException;
 use Pecee\Http\Middleware\IMiddleware;
 use Pecee\Http\Request;
 
@@ -17,13 +18,9 @@ class RawBodyToJson implements IMiddleware
         $rawBody = file_get_contents('php://input');
 
         if ($rawBody) {
-            try {
-                $body = json_decode($rawBody, true);
-                foreach ($body as $key => $value) {
-                    $request->$key = $value;
-                }
-            } catch (\Throwable $e) {
-
+            $body = json_decode($rawBody, true);
+            foreach ($body as $key => $value) {
+                $request->$key = $value;
             }
         }
     }
