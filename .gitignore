@@ -2,3 +2,4 @@
 vendor*
 static*
 node_modules*
+data
