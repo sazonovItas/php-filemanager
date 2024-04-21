@@ -54,13 +54,8 @@ class UserService
         ];
     }
 
-    public static function logout(string $login): void {
-        $user = UserRepository::getUserByLogin($login);
-        if (!$user) {
-            throw new UserNotFoundException("User with this login does not exist");
-        }
-
-        $refreshToken = TokenRepository::getByUserId($user->getId());
+    public static function logout(int $id): void {
+        $refreshToken = TokenRepository::getByUserId($id);
         if (!$refreshToken) {
             throw new TokenNotFoundException("Couldn't find refresh token");
         }
@@ -70,8 +65,8 @@ class UserService
         }
     }
 
-    public static function refresh(string $login, string $checkRefreshToken): string {
-        $user = UserRepository::getUserByLogin($login);
+    public static function refresh(string $id, string $checkRefreshToken): string {
+        $user = UserRepository::getUserById($id);
         if (!$user) {
             throw new UserNotFoundException("User with this login does not exist");
         }
@@ -81,7 +76,7 @@ class UserService
             throw new TokenNotFoundException("Couldn't find refresh token");
         }
 
-        if (!TokenService::validateToken($refreshToken, getenv("JWT_REFRESH_SECRET_KEY")) || $refreshToken->getToken() !== $checkRefreshToken) {
+        if (!TokenService::validateToken($refreshToken->getToken(), getenv("JWT_REFRESH_SECRET_KEY")) || $refreshToken->getToken() !== $checkRefreshToken) {
             TokenRepository::deleteToken($refreshToken->getId());
             throw new TokenInvalidException("Refresh token is invalid");
         }

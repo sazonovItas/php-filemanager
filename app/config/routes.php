@@ -8,6 +8,7 @@ require_once '../exceptions/TokenExceptions.php';
 
 use app\exceptions\BadRequestHttpException;
 use app\exceptions\NotFoundHttpException;
+use app\middlewares\Authenticate;
 use Pecee\Http\Request;
 use Pecee\SimpleRouter\SimpleRouter as Router;
 use app\middlewares\RawBodyToJson;
@@ -18,18 +19,44 @@ Router::setDefaultNamespace('app\controllers');
 
 Router::group([
     "prefix" => "api/v1",
-    "middleware" => [RawBodyToJson::class]
 ], function () {
 
     Router::group([
         "prefix" => "/auth",
+        "middleware" => [RawBodyToJson::class]
     ], function () {
         Router::post("/signup", "UserController@signup");
         Router::post("/signin", "UserController@signin");
-        Router::post("/logout", "UserController@logout");
-        Router::get("/refresh", "UserController@refresh");
+
+        Router::group([
+            "middleware" => [Authenticate::class]
+        ], function () {
+            Router::get("/refresh", "UserController@refresh");
+            Router::post("/logout", "UserController@logout");
+        });
     });
 
+    Router::group([
+        "prefix" => "/drive",
+        "middleware" => [Authenticate::class]
+    ], function () {
+        Router::group([
+            "middleware" => [RawBodyToJson::class]
+        ], function() {
+            Router::post("/delete", "DriveController@delete");
+            Router::post("/copy", "DriveController@copy");
+            Router::patch("/rename", "DriveController@rename");
+            Router::patch("/move", "DriveController@move");
+        });
+
+        Router::get("/files", "DriveController@getFiles");
+        Router::get("/file", "DriveController@getFile");
+        Router::get("/file-info", "DriveController@getFileInfo");
+
+        // TODO: implements methods
+        Router::get("/download", "DriveController@download");
+        Router::post("/upload", "DriveController@upload");
+    });
 });
 
 Router::get('/', 'VueController@run')->setMatch('//');

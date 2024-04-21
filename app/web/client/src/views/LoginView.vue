@@ -1,5 +1,6 @@
 <script setup>
 import { defineComponent, ref } from "vue";
+import AuthService from "@/services/AuthService";
 </script>
 
 <template>
@@ -62,25 +63,15 @@ export default defineComponent({
 
       this.isDisabled = false;
 
-      fetch(import.meta.env.VITE_API_SIGN_UP_ENDPOINT, {
-        method: "post",
-        credentials: "include",
-        body: JSON.stringify({
-          login: this.login,
-          password: this.password,
-        }),
-      })
-        .then(async (response) => {
-          if (response.ok) {
-            this.SignIn();
-          } else {
-            const body = await response.json();
-            this.registerMsg = body.message;
-            this.isDisabled = true;
+      AuthService.signUp(this.login, this.password)
+        .then((response) => {
+          if (response.status >= 200 && response.status <= 299) {
+            return this.SignIn(this.login, this.password);
           }
         })
         .catch((e) => {
-          this.registerMsg = e.message;
+          console.log(e.message);
+          this.registerMsg = e.response.data.message ?? e.message;
           this.isDisabled = true;
         });
     },
@@ -92,29 +83,18 @@ export default defineComponent({
 
       this.isDisabled = false;
 
-      fetch(import.meta.env.VITE_API_SIGN_IN_ENDPOINT, {
-        method: "post",
-        credentials: "include",
-        body: JSON.stringify({
-          login: this.login,
-          password: this.password,
-          remember_me: this.rememberMe ? "yes" : "no",
-        }),
-      })
-        .then(async (response) => {
-          const body = await response.json();
-          if (response.ok) {
+      AuthService.signIn(this.login, this.password)
+        .then((response) => {
+          const body = response.data;
+          if (response.status >= 200 && response.status <= 299) {
             localStorage.setItem("accessToken", body.accessToken);
             localStorage.setItem("login", body.login);
-
             this.$router.push({ name: "drive", query: { path: "" } });
-          } else {
-            this.loginMsg = body.message;
-            this.isDisabled = true;
           }
         })
         .catch((e) => {
-          this.loginMsg = e.message;
+          console.log(e.message);
+          this.loginMsg = e.response.data.message ?? e.message;
           this.isDisabled = true;
         });
     },
@@ -151,7 +131,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    if (localStorage.getItem("accessToken") && localStorage.getItem("login")) {
+    if (localStorage.getItem("accessToken") != undefined) {
       this.$router.push({ name: "drive", query: { path: "" } });
     }
   },
@@ -166,7 +146,12 @@ $input_border_color: $neutral_color_1;
 $login_btn_color: $primary_color_2;
 $login_btn_onhover_color: $primary_color_4;
 
+p {
+  margin: 40px 0 20px 0;
+}
+
 .container-login {
+  text-align: center;
   max-width: 800px;
 
   display: flex;

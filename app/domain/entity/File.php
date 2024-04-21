@@ -2,21 +2,25 @@
 
 namespace app\domain\entity;
 
-class File implements \JsonSerializable
+use JsonSerializable;
+
+class File implements JsonSerializable
 {
+    public const TYPE_FOLDER = 1;
+    public const TYPE_FILE = 2;
+
     public function __construct(
         private string $path,
         private string $name,
-        private int $size,
-        private string $extension,
+        private string $size,
+        private string $type,
         private ?string $mimeType,
-        private ?string $mime,
     )
     {
     }
 
     /**
-     * @return string path to a file
+     * @return string path to file system object
      */
     public function getPath(): string
     {
@@ -24,7 +28,7 @@ class File implements \JsonSerializable
     }
 
     /**
-     * @return string name of a file
+     * @return string name of the file
      */
     public function getName(): string
     {
@@ -32,40 +36,28 @@ class File implements \JsonSerializable
     }
 
     /**
-     * @return int size of a file
+     * @return string size of the file
      */
-    public function getSize(): int
+    public function getSize(): string
     {
         return $this->size;
     }
 
     /**
-     * @return string extension of a file
+     * @return string type of the file
      */
-    public function getExtension(): string
+    public function getType(): string
     {
-        return $this->extension;
+        return $this->type;
     }
 
     /**
-     * @return string|null mime of a file
+     * @return string|null mime type of the file
      */
-    public function getMime(): ?string
-    {
-        return $this->mime;
-    }
-
-    /**
-     * @return string|null mime type of file
-     */
-    public function getMimeType(): ?string
-    {
+    public function getMimeType(): ?string {
         return $this->mimeType;
     }
 
-    /**
-     * @return array for json serialization
-     */
     public function jsonSerialize(): array {
         return get_object_vars($this);
     }

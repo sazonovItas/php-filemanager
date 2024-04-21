@@ -5,8 +5,10 @@ namespace app\domain\service;
 
 use app\domain\entity\Token;
 use app\domain\repo\TokenRepository;
+use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use stdClass;
 
 class TokenService
 {
@@ -40,7 +42,7 @@ class TokenService
         return JWT::encode($payload, $key, "HS512");
     }
 
-    // TODO: does not throw exception from cannot save refresh token
+    // TODO: do not throw exception from cannot save refresh token
     public static function saveToken(int $userId, string $refreshToken): Token|false {
         $tokenData = TokenRepository::getByUserId($userId);
         if ($tokenData) {
@@ -49,17 +51,17 @@ class TokenService
             if (TokenRepository::updateToken($token)) {
                 return $token;
             } else {
-                throw new \Exception("Couldn't save token");
+                throw new Exception("Couldn't save token");
             }
         }
 
         return TokenRepository::createToken(new Token(0, $userId, $refreshToken));
     }
 
-    public static function validateToken($token, $key): \stdClass|false {
+    public static function validateToken(string $token, string $key): stdClass|false {
         try {
-            return JWT::decode($token->getToken(), new Key($key, "HS512"));
-        } catch (\Exception $e) {
+            return JWT::decode($token, new Key($key, "HS512"));
+        } catch (Exception $e) {
             return false;
         }
     }

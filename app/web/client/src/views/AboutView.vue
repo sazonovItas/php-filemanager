@@ -25,6 +25,7 @@ $container_font_color: $neutral_color_0;
 $container_link_color: $primary_color_2;
 
 .container {
+  text-align: center;
   background-color: $container_background_color;
 }
 

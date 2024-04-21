@@ -21,11 +21,13 @@ const routes = [
     path: "/drive",
     name: "drive",
     component: DriveView,
+    props: true,
   },
   {
-    path: "/file",
+    path: "/drive/file",
     name: "file",
     component: FilePreview,
+    props: true,
   },
   {
     path: "/:path(.*)*",

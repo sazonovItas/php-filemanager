@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\domain\service\TokenService;
 use app\domain\service\UserService;
 use app\exceptions\BadRequestHttpException;
 use app\exceptions\NotAuthorizedHttpException;
@@ -52,7 +53,7 @@ class UserController extends AbstractController
         try {
             $signInData = UserService::signin($this->request->login, $this->request->password, !empty($this->request->remember_me) && $this->request->remember_me === "yes");
             if ($signInData["refreshToken"] !== null) {
-                setcookie("refreshToken", $signInData["refreshToken"], time() + 60 * 60 * 24, "token", "", false, true);
+                setcookie("refreshToken", $signInData["refreshToken"], time() + 60 * 60 * 24, "/", "", false, true);
             }
 
             $this->response->json(['accessToken' => $signInData["accessToken"], "login" => ($signInData["user"])->getLogin()]);
@@ -66,17 +67,16 @@ class UserController extends AbstractController
     }
 
     /**
-     * post /api/v1/auth/logout?login=login
+     * post /api/v1/auth/logout
      */
     public function logout() {
-        $login = $this->request->getUrl()->getParam("login");
-        if (!is_string($login)) {
-            throw new BadRequestHttpException("couldn't find login param");
+        if ($this->request->access_token_payload === null) {
+            throw new TokenInvalidException("Couldn't read user id from token");
         }
 
         try {
-            UserService::logout($login);
-            setcookie("refreshToken", "", -1, "token", "", false, true);
+            setcookie("refreshToken", "", -1, "/", "", false, true);
+            UserService::logout($this->request->access_token_payload['user_id']);
         } catch (UserNotFoundException|TokenNotFoundException $exception) {
             throw new NotFoundHttpException($exception->getMessage());
         } catch (\Exception $exception) {
@@ -85,12 +85,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * get /api/v1/auth/refresh?login=login
+     * get /api/v1/auth/refresh
      */
     public function refresh() {
-        $login = $this->request->getUrl()->getParam("login");
-        if (!is_string($login)) {
-            throw new BadRequestHttpException("couldn't find login param");
+        if ($this->request->access_token_payload === null) {
+            throw new TokenInvalidException("Couldn't read user id from token");
         }
 
         isset($_COOKIE["refreshToken"]) ? $refreshToken = $_COOKIE["refreshToken"] : $refreshToken = null;
@@ -99,12 +98,12 @@ class UserController extends AbstractController
         }
 
         try {
-            $token = UserService::refresh($login, $refreshToken);
+            $token = UserService::refresh($this->request->access_token_payload['user_id'], $refreshToken);
             $this->response->json(["accessToken" => $token]);
         } catch (UserNotFoundException|TokenNotFoundException $exception) {
             throw new NotFoundHttpException($exception->getMessage());
         } catch (TokenInvalidException $exception) {
-            setcookie("refreshToken", "", -1, "", "", false, true);
+            setcookie("refreshToken", "", -1, "/", "", false, true);
             throw new NotAuthorizedHttpException($exception->getMessage());
         } catch (\Exception $exception) {
             throw $exception;

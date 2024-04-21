@@ -1,1 +1,23 @@
 @import "~bootstrap/scss/bootstrap";
+
+@import "./scss/colors.scss";
+
+.v-color-primary-0 {
+  color: $primary_color_0;
+}
+
+.v-color-primary-1 {
+  color: $primary_color_1;
+}
+
+.v-color-primary-2 {
+  color: $primary_color_2;
+}
+
+.v-color-primary-3 {
+  color: $primary_color_3;
+}
+
+.v-color-primary-4 {
+  color: $primary_color_4;
+}

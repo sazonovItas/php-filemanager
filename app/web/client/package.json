@@ -9,7 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.2",
+    "@fortawesome/free-brands-svg-icons": "^6.5.2",
+    "@fortawesome/free-regular-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/vue-fontawesome": "^3.0.6",
     "@popperjs/core": "^2.11.8",
+    "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "eslint": "8.23.0",
     "eslint-plugin-vue": "^9.25.0",
