@@ -74,10 +74,35 @@ class DriveController extends AbstractController
         FileRepository::copy($this->request->oldFilePath, $this->request->newFilePath);
     }
 
+    /**
+     * get api/v1/drive/download?path
+     */
     public function download() {
-        $path = $_GET['path'] ?? '';
+        if (!isset($_GET['path'])) {
+            throw new BadRequestHttpException("Missing path");
+        }
+
+        $filePath = $_GET['path'];
+        $this->response->header("X-File-Path: " . $filePath);
+        if (!file_exists($filePath)) {
+            throw new BadRequestHttpException("File does not exist");
+        }
+
+        $this->response->header('Content-Description: File Transfer');
+        $this->response->header('Content-Type: application/octet-stream');
+        $this->response->header('Content-Disposition: attachment; filename="'.basename($_GET['path']).'"');
+        $this->response->header('Expires: 0');
+        $this->response->header('Cache-Control: must-revalidate');
+        $this->response->header('Pragma: public');
+        $this->response->header('Content-Length: ' . filesize($filePath));
+        flush();
+        readfile($filePath);
     }
 
+    /**
+     * post api/v1/drive/upload
+     */
     public function upload() {
+        FileRepository::upload($this->request->getHeader("X-Load-Path"));
     }
 }

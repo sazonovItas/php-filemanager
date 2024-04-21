@@ -65,23 +65,20 @@ class UserService
         }
     }
 
-    public static function refresh(string $id, string $checkRefreshToken): string {
-        $user = UserRepository::getUserById($id);
-        if (!$user) {
-            throw new UserNotFoundException("User with this login does not exist");
-        }
-
-        $refreshToken = TokenRepository::getByUserId($user->getId());
+    public static function refresh(string $checkRefreshToken): string {
+        $refreshToken = TokenRepository::getByToken($checkRefreshToken);
         if (!$refreshToken) {
             throw new TokenNotFoundException("Couldn't find refresh token");
         }
 
-        if (!TokenService::validateToken($refreshToken->getToken(), getenv("JWT_REFRESH_SECRET_KEY")) || $refreshToken->getToken() !== $checkRefreshToken) {
+        $token = TokenService::validateToken($refreshToken->getToken(), getenv("JWT_REFRESH_SECRET_KEY"));
+        if (!$token) {
             TokenRepository::deleteToken($refreshToken->getId());
             throw new TokenInvalidException("Refresh token is invalid");
         }
+        $payload = (array)json_decode(json_encode($token), true)['payload'];
 
-        return TokenService::generateAccessToken(['user_id' => $user->getId()]);
+        return TokenService::generateAccessToken(['user_id' => $payload['user_id']]);
     }
 
 }

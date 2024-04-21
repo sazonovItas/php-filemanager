@@ -66,7 +66,7 @@ export default defineComponent({
       AuthService.signUp(this.login, this.password)
         .then((response) => {
           if (response.status >= 200 && response.status <= 299) {
-            return this.SignIn(this.login, this.password);
+            return this.SignIn();
           }
         })
         .catch((e) => {
@@ -83,7 +83,11 @@ export default defineComponent({
 
       this.isDisabled = false;
 
-      AuthService.signIn(this.login, this.password)
+      AuthService.signIn(
+        this.login,
+        this.password,
+        this.rememberMe ? "yes" : "no",
+      )
         .then((response) => {
           const body = response.data;
           if (response.status >= 200 && response.status <= 299) {
@@ -131,7 +135,7 @@ export default defineComponent({
     },
   },
   mounted() {
-    if (localStorage.getItem("accessToken") != undefined) {
+    if (localStorage.getItem("accessToken")) {
       this.$router.push({ name: "drive", query: { path: "" } });
     }
   },

@@ -27,11 +27,11 @@ Router::group([
     ], function () {
         Router::post("/signup", "UserController@signup");
         Router::post("/signin", "UserController@signin");
+        Router::get("/refresh", "UserController@refresh");
 
         Router::group([
             "middleware" => [Authenticate::class]
         ], function () {
-            Router::get("/refresh", "UserController@refresh");
             Router::post("/logout", "UserController@logout");
         });
     });
@@ -40,6 +40,15 @@ Router::group([
         "prefix" => "/drive",
         "middleware" => [Authenticate::class]
     ], function () {
+        // TODO: implements methods
+        Router::get("/download", "DriveController@download");
+        Router::post("/upload", "DriveController@upload");
+
+        Router::get("/files", "DriveController@getFiles");
+        Router::get("/file", "DriveController@getFile");
+        Router::get("/file-info", "DriveController@getFileInfo");
+
+
         Router::group([
             "middleware" => [RawBodyToJson::class]
         ], function() {
@@ -48,14 +57,6 @@ Router::group([
             Router::patch("/rename", "DriveController@rename");
             Router::patch("/move", "DriveController@move");
         });
-
-        Router::get("/files", "DriveController@getFiles");
-        Router::get("/file", "DriveController@getFile");
-        Router::get("/file-info", "DriveController@getFileInfo");
-
-        // TODO: implements methods
-        Router::get("/download", "DriveController@download");
-        Router::post("/upload", "DriveController@upload");
     });
 });
 

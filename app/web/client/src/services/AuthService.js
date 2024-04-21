@@ -8,10 +8,11 @@ export default class AuthService {
     });
   }
 
-  static async signIn(login, password) {
+  static async signIn(login, password, remember_me) {
     return axiosApi.post(import.meta.env.VITE_API_SIGN_IN_ENDPOINT, {
       login: login,
       password: password,
+      remember_me: remember_me,
     });
   }
 

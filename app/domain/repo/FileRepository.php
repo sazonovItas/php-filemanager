@@ -25,6 +25,25 @@ class FileRepository
       self::$prefixPath = $prefix;
     }
 
+    public static function upload(string $path) {
+        $path = self::$prefixPath . $path;
+        if (!self::checkFolder($path)) {
+            throw new NotFoundHttpException("could not found {$path}");
+        }
+
+        if (!@move_uploaded_file($_FILES["file"]["tmp_name"], $path . '/' . $_FILES["file"]["name"])) {
+            throw new \Exception("could not upload file to {$path}/{$_FILES["file"]["name"]}");
+        };
+    }
+
+    public static function download(string $path) {
+        if (!self::checkFolder($path)) {
+            throw new NotFoundHttpException("could not found {$path}");
+        }
+
+
+    }
+
     public static function getFilesByPath(string $path): array {
         $path = self::$prefixPath . $path;
         if (!self::checkFolder($path)) {
@@ -38,7 +57,7 @@ class FileRepository
 
         $files = [];
         foreach ($content as $file) {
-            if ($file === '..') {
+            if ($file === '.') {
                 continue;
             }
 

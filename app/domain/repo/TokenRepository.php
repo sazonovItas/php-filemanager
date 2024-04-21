@@ -33,8 +33,21 @@ class TokenRepository
     }
 
     public static function getByUserId(int $userId): Token|false {
-        $statement = self::$db->prepare("SELECT * FROM tokens WHERE user_id = :user_id");
+        $statement = self::$db->prepare("SELECT * FROM tokens WHERE user_id=:user_id");
         $statement->bindValue('user_id', $userId);
+        $statement->execute();
+
+        $token = $statement->fetch(PDO::FETCH_ASSOC);
+        if (!$token) {
+            return false;
+        }
+
+        return new Token($token['id'], $token['user_id'], $token['token']);
+    }
+
+    public static function getByToken(string $token): Token|false {
+        $statement = self::$db->prepare("SELECT * FROM tokens WHERE token=:token");
+        $statement->bindValue('token', $token);
         $statement->execute();
 
         $token = $statement->fetch(PDO::FETCH_ASSOC);

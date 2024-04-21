@@ -26,9 +26,9 @@ abstract class AbstractController
 
     public function setCors()
     {
-        $this->response->header('Access-Control-Allow-Origin: http://0.0.0.0:8080');
+        $this->response->header('Access-Control-Allow-Origin: ' . getenv("CLIENT_HOST"));
         $this->response->header('Access-Control-Allow-Credentials: true');
-        $this->response->header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE');
+        $this->response->header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, PATCH, DELETE');
         // $this->response->header('Access-Control-Max-Age: 3600');
     }
 }

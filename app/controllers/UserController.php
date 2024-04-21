@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use app\domain\service\TokenService;
 use app\domain\service\UserService;
 use app\exceptions\BadRequestHttpException;
 use app\exceptions\NotAuthorizedHttpException;
@@ -88,17 +87,13 @@ class UserController extends AbstractController
      * get /api/v1/auth/refresh
      */
     public function refresh() {
-        if ($this->request->access_token_payload === null) {
-            throw new TokenInvalidException("Couldn't read user id from token");
-        }
-
         isset($_COOKIE["refreshToken"]) ? $refreshToken = $_COOKIE["refreshToken"] : $refreshToken = null;
         if ($refreshToken === null) {
             throw new NotAuthorizedHttpException("couldn't find refresh token");
         }
 
         try {
-            $token = UserService::refresh($this->request->access_token_payload['user_id'], $refreshToken);
+            $token = UserService::refresh($refreshToken);
             $this->response->json(["accessToken" => $token]);
         } catch (UserNotFoundException|TokenNotFoundException $exception) {
             throw new NotFoundHttpException($exception->getMessage());
