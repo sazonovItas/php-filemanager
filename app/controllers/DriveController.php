@@ -16,6 +16,24 @@ class DriveController extends AbstractController
     }
 
     /**
+     * get api/v1/drive/file-info?path=
+     */
+    public function getFileInfo() {
+        $path = $_GET['path'] ?? '';
+        $this->response->json(FileRepository::getFileByPath($path));
+    }
+
+    /**
+     * get api/v1/drive/file-preview?path=
+     */
+    public function getFilePreview() {
+        $path = $_GET['path'] ?? '';
+        $file = FileRepository::getFileByPath($path);
+
+        readfile($file->getPath());
+    }
+
+    /**
      * delete api/v1/drive/file
      * body {
      *     path: "path"

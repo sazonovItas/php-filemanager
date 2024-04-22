@@ -100,6 +100,11 @@ export default defineComponent({
           path: this.$route.path,
           query: { path: this.path },
         });
+      } else {
+        this.$router.push({
+          name: "file",
+          query: { path: this.path.concat("/", file.name) },
+        });
       }
     },
     deleteFile(file) {

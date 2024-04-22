@@ -45,7 +45,7 @@ Router::group([
         Router::post("/file", "DriveController@upload");
 
         Router::get("", "DriveController@getFiles");
-        Router::get("/file-preview", "DriveController@getFile");
+        Router::get("/file-preview", "DriveController@getFilePreview");
         Router::get("/file-info", "DriveController@getFileInfo");
 
 

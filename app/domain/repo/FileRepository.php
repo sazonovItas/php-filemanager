@@ -40,8 +40,15 @@ class FileRepository
         if (!self::checkFolder($path)) {
             throw new NotFoundHttpException("could not found {$path}");
         }
+    }
 
+    public static function getFileByPath(string $path): File {
+        $path = self::$prefixPath . $path;
+        if (!self::checkFolder($path) || !@file_exists($path)) {
+            throw new NotFoundHttpException("could not found {$path}");
+        }
 
+        return new File($path, basename($path), @filesize($path),  File::TYPE_FILE, MimeType::fromFile($path));
     }
 
     public static function getFilesByPath(string $path): array {
