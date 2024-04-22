@@ -16,7 +16,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * delete api/v1/drive/delete
+     * delete api/v1/drive/file
      * body {
      *     path: "path"
      * }
@@ -30,7 +30,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * patch api/v1/drive/rename
+     * patch api/v1/drive/file/rename
      * body {
      *     oldFileName: "oldFileName",
      *     newFileName: "newFileName",
@@ -45,7 +45,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * patch api/v1/drive/move
+     * patch api/v1/drive/file/move
      * body {
      *     oldFilePath: "oldFilePath",
      *     newFilePath: "newFilePath",
@@ -60,7 +60,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * post api/v1/drive/copy
+     * post api/v1/drive/file/copy
      * body {
      *     oldFilePath: "oldFilePath",
      *     newFilePath: "newFilePath",
@@ -75,7 +75,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * get api/v1/drive/download?path
+     * get api/v1/drive/file?path
      */
     public function download() {
         if (!isset($_GET['path'])) {
@@ -100,7 +100,7 @@ class DriveController extends AbstractController
     }
 
     /**
-     * post api/v1/drive/upload
+     * post api/v1/drive/file
      */
     public function upload() {
         FileRepository::upload($this->request->getHeader("X-Load-Path"));

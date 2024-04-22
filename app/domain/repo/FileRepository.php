@@ -32,7 +32,7 @@ class FileRepository
         }
 
         if (!@move_uploaded_file($_FILES["file"]["tmp_name"], $path . '/' . $_FILES["file"]["name"])) {
-            throw new \Exception("could not upload file to {$path}/{$_FILES["file"]["name"]}");
+            throw new \Exception("could not upload file to {$path}/{$_FILES["file"]["name"]}: " . $_FILES["file"]["error"]);
         };
     }
 

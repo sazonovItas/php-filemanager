@@ -41,21 +41,21 @@ Router::group([
         "middleware" => [Authenticate::class]
     ], function () {
         // TODO: implements methods
-        Router::get("/download", "DriveController@download");
-        Router::post("/upload", "DriveController@upload");
+        Router::get("/file", "DriveController@download");
+        Router::post("/file", "DriveController@upload");
 
-        Router::get("/files", "DriveController@getFiles");
-        Router::get("/file", "DriveController@getFile");
+        Router::get("", "DriveController@getFiles");
+        Router::get("/file-preview", "DriveController@getFile");
         Router::get("/file-info", "DriveController@getFileInfo");
 
 
         Router::group([
             "middleware" => [RawBodyToJson::class]
         ], function() {
-            Router::delete("/delete", "DriveController@delete");
-            Router::post("/copy", "DriveController@copy");
-            Router::patch("/rename", "DriveController@rename");
-            Router::patch("/move", "DriveController@move");
+            Router::delete("/file", "DriveController@delete");
+            Router::post("file/copy", "DriveController@copy");
+            Router::patch("file/rename", "DriveController@rename");
+            Router::patch("file/move", "DriveController@move");
         });
     });
 });
@@ -64,6 +64,8 @@ Router::get('/', 'VueController@run')->setMatch('//');
 
 Router::error(function(Request $request, Exception $exception) {
     $response = Router::response();
+
+    $response->httpCode(500);
     switch (get_class($exception)) {
         case BadRequestHttpException::class: {
             $response->httpCode(400);
@@ -79,12 +81,8 @@ Router::error(function(Request $request, Exception $exception) {
             $response->httpCode(404);
             break;
         }
-
-        case Exception::class: {
-            $response->httpCode(500);
-            break;
-        }
     }
+
 
     $response->json([
         'status' => 'error',

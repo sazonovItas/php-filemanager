@@ -55,7 +55,7 @@ import FileService from "../services/FileService";
                 Edit
               </button>
               <ul class="dropdown-menu">
-                <li>
+                <li v-if="file.type == 2">
                   <a class="dropdown-item" href="#">Move</a>
                 </li>
                 <li><a class="dropdown-item" href="#">Rename</a></li>
@@ -143,6 +143,8 @@ export default defineComponent({
           formData,
           {
             headers: headers,
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
           },
         )
         .then((res) => {
@@ -184,6 +186,8 @@ export default defineComponent({
           `${import.meta.env.VITE_BASE_API_URL}${import.meta.env.VITE_API_DOWNLOAD_ENDPOINT}?path=${file.path}`,
           {
             responseType: "blob", // important
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
           },
         )
         .then((response) => {
