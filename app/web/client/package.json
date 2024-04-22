@@ -20,6 +20,7 @@
     "eslint": "8.23.0",
     "eslint-plugin-vue": "^9.25.0",
     "fetch": "^1.1.0",
+    "jenesius-vue-modal": "^1.11.1",
     "js-cookie": "^3.0.5",
     "primevue": "^3.51.0",
     "sass": "^1.75.0",

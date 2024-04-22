@@ -17,6 +17,7 @@ class RawBodyToJson implements IMiddleware
     {
         $rawBody = file_get_contents('php://input');
 
+
         if ($rawBody) {
             $body = json_decode($rawBody, true);
             foreach ($body as $key => $value) {

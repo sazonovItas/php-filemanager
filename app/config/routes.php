@@ -40,7 +40,6 @@ Router::group([
         "prefix" => "/drive",
         "middleware" => [Authenticate::class]
     ], function () {
-        // TODO: implements methods
         Router::get("/file", "DriveController@download");
         Router::post("/file", "DriveController@upload");
 
@@ -52,10 +51,9 @@ Router::group([
         Router::group([
             "middleware" => [RawBodyToJson::class]
         ], function() {
+            Router::post("/file/rename", "DriveController@rename");
             Router::delete("/file", "DriveController@delete");
-            Router::post("file/copy", "DriveController@copy");
-            Router::patch("file/rename", "DriveController@rename");
-            Router::patch("file/move", "DriveController@move");
+            Router::post("/folder", "DriveController@createFolder");
         });
     });
 });

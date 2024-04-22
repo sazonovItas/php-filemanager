@@ -33,6 +33,14 @@ class DriveController extends AbstractController
         readfile($file->getPath());
     }
 
+    public function createFolder() {
+        if ($this->request->path === null) {
+            throw new BadRequestHttpException("Missing new folder name in request path");
+        }
+
+        FileRepository::createFolder($this->request->path);
+    }
+
     /**
      * delete api/v1/drive/file
      * body {
@@ -48,48 +56,18 @@ class DriveController extends AbstractController
     }
 
     /**
-     * patch api/v1/drive/file/rename
+     * post api/v1/drive/file/rename
      * body {
      *     oldFileName: "oldFileName",
      *     newFileName: "newFileName",
      * }
      */
     public function rename() {
-        if ($this->request->oldFileName === null || $this->request->newFileName) {
+        if ($this->request->oldPath === null || $this->request->newPath === null) {
             throw new BadRequestHttpException("Missing files names");
         }
 
-        FileRepository::rename($this->request->oldFileName, $this->request->newFileName);
-    }
-
-    /**
-     * patch api/v1/drive/file/move
-     * body {
-     *     oldFilePath: "oldFilePath",
-     *     newFilePath: "newFilePath",
-     * }
-     */
-    public function move() {
-        if ($this->request->oldFilePath === null || $this->request->newFilePath) {
-            throw new BadRequestHttpException("Missing files names");
-        }
-
-        FileRepository::rename($this->request->oldFilePath, $this->request->newFilePath);
-    }
-
-    /**
-     * post api/v1/drive/file/copy
-     * body {
-     *     oldFilePath: "oldFilePath",
-     *     newFilePath: "newFilePath",
-     * }
-     */
-    public function copy() {
-        if ($this->request->oldFilePath === null || $this->request->newFilePath === null) {
-            throw new BadRequestHttpException("Missing files paths");
-        }
-
-        FileRepository::copy($this->request->oldFilePath, $this->request->newFilePath);
+        FileRepository::rename($this->request->oldPath, $this->request->newPath);
     }
 
     /**

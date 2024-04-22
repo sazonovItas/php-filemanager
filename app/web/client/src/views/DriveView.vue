@@ -22,7 +22,12 @@ import FileService from "../services/FileService";
           />
           <button class="v-func-button btn" @click="submitFile">Upload</button>
         </div>
-        <button class="v-func-button btn">Create</button>
+        <button class="v-func-button btn" @click="createFolder">Create</button>
+        <input
+          class="v-func-button input"
+          placeholder="New name"
+          v-model="newFileName"
+        />
         <p style="align-self: center; color: #dddd00">{{ infoMessage }}</p>
       </div>
       <div class="v-drive-files-container">
@@ -45,7 +50,7 @@ import FileService from "../services/FileService";
               <p>Size: {{ file.size }}</p>
               <p>Mime: {{ file.mimeType }}</p>
             </div>
-            <div class="dropdown">
+            <div v-if="file.name != '..'" class="dropdown">
               <button
                 class="btn btn-secondary dropdown-toggle"
                 type="button"
@@ -55,10 +60,9 @@ import FileService from "../services/FileService";
                 Edit
               </button>
               <ul class="dropdown-menu">
-                <li v-if="file.type == 2">
-                  <a class="dropdown-item" href="#">Move</a>
+                <li @click="renameFile(file)">
+                  <a class="dropdown-item" href="#">Rename</a>
                 </li>
-                <li><a class="dropdown-item" href="#">Rename</a></li>
                 <li v-if="file.type == 2" @click="deleteFile(file)">
                   <a class="dropdown-item" href="#">Delete</a>
                 </li>
@@ -85,9 +89,61 @@ export default defineComponent({
       uploadFiles: null,
       infoMessage: "",
       files: files,
+      newFileName: "",
     };
   },
   methods: {
+    createFolder() {
+      if (!this.newFileName.trim().length) {
+        this.infoMessage = "new folder name not should empty";
+        return;
+      }
+
+      FileService.createFolder(this.path.concat("/", this.newFileName))
+        .then((response) => {
+          if (response.status >= 200 && response.status <= 299) {
+            this.getFiles();
+          }
+          console.log(response);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.infoMessage = e.response.data.message ?? e.message;
+          if (e.response.status == 401) {
+            localStorage.removeItem("accessToken");
+            this.$router.push({ name: "login" });
+          }
+        });
+    },
+    renameFile(file) {
+      if (!this.newFileName.trim().length) {
+        this.infoMessage = "new file name not should empty";
+        return;
+      }
+
+      FileService.renameFile(
+        file.path,
+        file.path
+          .split("/")
+          .slice(0, -1)
+          .join("/")
+          .concat("/", this.newFileName),
+      )
+        .then((response) => {
+          if (response.status >= 200 && response.status <= 299) {
+            this.getFiles();
+          }
+          console.log(response);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.infoMessage = e.response.data.message ?? e.message;
+          if (e.response.status == 401) {
+            localStorage.removeItem("accessToken");
+            this.$router.push({ name: "login" });
+          }
+        });
+    },
     fileOnClick(file) {
       if (file.type == 1) {
         if (file.name === ".." && this.path !== "") {
@@ -248,6 +304,10 @@ export default defineComponent({
   display: flex;
   border-radius: 8px;
   box-shadow: 5px 3px 3px $neutral_color_3;
+}
+
+h3 {
+  margin: 0 0 0 15px;
 }
 
 p {

@@ -32,4 +32,17 @@ export default class FileService {
       },
     );
   }
+
+  static async renameFile(oldPath, newPath) {
+    return axiosApi.post(`${import.meta.env.VITE_API_RENAME_FILE_ENDPOINT}`, {
+      oldPath: oldPath,
+      newPath: newPath,
+    });
+  }
+
+  static async createFolder(path) {
+    return axiosApi.post(`${import.meta.env.VITE_API_CREATE_FOLDER_ENDPOINT}`, {
+      path: path,
+    });
+  }
 }

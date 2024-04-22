@@ -27,8 +27,7 @@ class UserController extends AbstractController
         }
 
         try {
-            $user = UserService::signup($this->request->login, $this->request->password);
-            //$this->response->json(["id" => $user->getId(), "login" => $user->getLogin()]);
+            $user = UserService::signup($this->request->login, $this->request->password);;
         } catch (UserAlreadyExistsException $exception) {
             throw new BadRequestHttpException($exception->getMessage());
         } catch (\Exception $exception) {

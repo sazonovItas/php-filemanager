@@ -51,6 +51,13 @@ class FileRepository
         return new File($path, basename($path), @filesize($path),  File::TYPE_FILE, MimeType::fromFile($path));
     }
 
+    public static function createFolder(string $path): void {
+        $path = self::$prefixPath . $path;
+        if (!@mkdir($path, 0777, true)) {
+            throw new \Exception("could not create directory {$path}");
+        }
+    }
+
     public static function getFilesByPath(string $path): array {
         $path = self::$prefixPath . $path;
         if (!self::checkFolder($path)) {
@@ -81,30 +88,6 @@ class FileRepository
 
         if (!rename($oldFilePath, $newFilePath)) {
             throw new \Exception("could not rename {$oldFilePath} to {$newFilePath}");
-        }
-    }
-
-    public static function move(string $oldFilePath, string $newFilePath): void {
-        if (!self::checkFolder($oldFilePath)) {
-            throw new NotFoundHttpException("could not found {$oldFilePath}");
-        }
-
-        if (!rename($oldFilePath, $newFilePath)) {
-            throw new \Exception("could not move {$oldFilePath} to {$newFilePath}");
-        }
-    }
-
-    public static function copy(string $oldFilePath, string $newFilePath): void {
-        if (!self::checkFolder($oldFilePath)) {
-            throw new NotFoundHttpException("could not found {$oldFilePath}");
-        }
-
-        if (!self::checkFolder($newFilePath)) {
-            throw new NotFoundHttpException("could not found {$newFilePath}");
-        }
-
-        if (!copy($oldFilePath, $newFilePath)) {
-            throw new \Exception("could not copy {$oldFilePath} to {$newFilePath}");
         }
     }
 
