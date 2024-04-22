@@ -59,7 +59,7 @@ import FileService from "../services/FileService";
                   <a class="dropdown-item" href="#">Move</a>
                 </li>
                 <li><a class="dropdown-item" href="#">Rename</a></li>
-                <li v-if="file.type == 2">
+                <li v-if="file.type == 2" @click="deleteFile(file)">
                   <a class="dropdown-item" href="#">Delete</a>
                 </li>
                 <li v-if="file.type == 2" @click="downloadFile(file)">
@@ -102,6 +102,23 @@ export default defineComponent({
         });
       }
     },
+    deleteFile(file) {
+      FileService.deleteFile(file.path)
+        .then((response) => {
+          if (response.status >= 200 && response.status <= 299) {
+            this.getFiles();
+          }
+          console.log(response);
+        })
+        .catch((e) => {
+          console.log(e);
+          this.infoMessage = e.response.data.message ?? e.message;
+          if (e.response.status == 401) {
+            localStorage.removeItem("accessToken");
+            this.$router.push({ name: "login" });
+          }
+        });
+    },
     handleUploadFile() {
       this.uploadFiles = this.$refs.file.files[0];
     },
@@ -132,6 +149,7 @@ export default defineComponent({
           console.log(res);
           if (res.status >= 200 && res.status <= 299) {
             this.infoMessage = "file uploaded";
+            this.getFiles();
           }
         })
         .catch((e) => {

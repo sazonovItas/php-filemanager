@@ -52,7 +52,7 @@ Router::group([
         Router::group([
             "middleware" => [RawBodyToJson::class]
         ], function() {
-            Router::post("/delete", "DriveController@delete");
+            Router::delete("/delete", "DriveController@delete");
             Router::post("/copy", "DriveController@copy");
             Router::patch("/rename", "DriveController@rename");
             Router::patch("/move", "DriveController@move");
